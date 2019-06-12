@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block leftcontblock %}
+
+<div class="card bg-light text-center mx-3">
+    <div class="card-header">
+        Featured
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">Announcement Card</h5>
+        <p class="card-text">You're special yo.</p>
+        <a href="#" class="btn btn-primary">That's it</a>
+    </div>
+    <div class="card-footer text-muted">
+        2 days ago
+    </div>
+</div>
+
+{% endblock %}
+
+{% block rightcontblock %}
+
+{# <!-- NEW USER POST --> #}
+
+
+<div class="card bg-light text-center mx-3">
+    <form method="POST" class="post-form">
+        <div class="card-body">
+            {% csrf_token %}
+            {% load widget_tweaks %}
+            <div class="form-group">
+                {% render_field pform.text class+="form-control" placeholder+="New post" %}
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Post</button>
+        </div>
+    </form>
+</div>
+
+<br>
+{# <!--  --> #}
+
+{# <!-- POSTS --> #}
+
+{% load static %}
+{% for post in posts %}
+
+<div class="card bg-light mx-3">
+    <div class="card-body">
+        <p class="card-text">{{ post.text }}</p>
+    </div>
+    <div class="card-footer text-muted">
+        <img src="{% static 'images/user.png' %}" width="32" height="32" alt="">
+        <a href="/users/{{ post.user }}" class="badge badge-dark"> @{{ post.user }}</a>
+        <a href="{% url 'post_detail' pk=post.pk %}" class="badge">{{ post.created_at }}</a>
+
+        <div class="btn-group btn-group-sm float-right" role="group" aria-label="Post Misc">
+            <a href="{% url 'post_like' pk=post.pk %}" class="btn btn-outline-dark">
+                <i class="material-icons align-middle" role="presentation">favorite_border</i>
+                <span>{{ post.likes }}</span></a>
+            <a href="{% url 'post_detail' pk=post.pk %}" class="btn btn-outline-dark">
+                <i class="material-icons align-middle" role="presentation">reply</i>
+                <span> {{ post.replys }} </span></a>
+            {% if post.user.id == user.pk %}
+            <a href="" class="btn btn-outline-dark">
+                <i class="material-icons align-middle" role="presentation">delete</i>
+                <span></span></a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% for reply in replies %}
+{% if reply.parent_id == post.id %}
+
+<div class="card bg-light ml-5 mr-3">
+    <div class="card-body">
+        <p class="card-text">{{ reply.text }}</p>
+    </div>
+    <div class="card-footer text-muted">
+        <a href="/users/{{ reply.user }}" class="badge badge-dark"> @{{ reply.user }}</a>
+        <a href="{% url 'post_detail' pk=post.pk %}" class="badge">{{ reply.created_at }}</a>
+
+        <div class="btn-group btn-group-sm float-right" role="group" aria-label="Reply Misc">
+            <a href="{% url 'post_like' pk=reply.pk %}" class="btn btn-outline-dark">
+                <i  class="material-icons align-middle"
+                    role="presentation">favorite_border</i><span>{{ reply.likes }}</span></a>
+
+            <a href="{% url 'post_detail' pk=reply.pk %}" class="btn btn-outline-dark">
+                <i  class="material-icons align-middle" 
+                    role="presentation">reply</i><span>{{ reply.replys }}</span></a>
+        </div>
+    </div>
+</div>
+
+{% endif %}
+{% endfor %}
+
+</br>
+
+{% endfor %}
+
+{% endblock %}

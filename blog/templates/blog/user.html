@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="col-md-8 mx-auto">
+
+  <div class="card text-center mx-3">
+    <img class="mx-auto mt-3" src="{% static 'images/user.png' %}" alt="Card image" height="128" width="128">
+    <div class="card-body">
+      <h3 class="card-title">{{ puser.username }}'s Profile</h3>
+      <h5 class="card-title"><a href="/users/{{ user.username }}">@{{ puser.username }}</a></h5>
+      <p class="card-text">User bio.</p>
+
+      {% if puser.id != user.id %}
+      <form action="/follow_unfollow" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="follow" value="{{ puser.id }}">
+
+        {% if follow %}
+        <button type="submit" class="btn btn-primary">Unfollow</button>
+        {% else %}
+        <button type="submit" class="btn btn-primary">Follow</button>
+        {% endif %}
+      </form>
+      {% endif %}
+
+    </div>
+  </div>
+
+  {% for post in userposts %}
+  <br>
+  <div class="card bg-light mx-3">
+    <div class="card-body">
+      <p class="card-text">{{ post.text }}</p>
+    </div>
+    <div class="card-footer text-muted">
+      <img src="{% static 'images/user.png' %}" width="32" height="32" alt="">
+      <a href="/users/{{ post.user }}" class="badge badge-dark"> @{{ post.user }}</a>
+      <a href="{% url 'post_detail' pk=post.pk %}" class="badge">{{ post.created_at }}</a>
+
+      <div class="btn-group btn-group-sm float-right" role="group" aria-label="Post Misc">
+        <a href="{% url 'post_like' pk=post.pk %}" class="btn btn-outline-dark">
+          <i class="material-icons align-middle" role="presentation">favorite_border</i>
+          <span>{{ post.likes }}</span></a>
+        <a href="{% url 'post_detail' pk=post.pk %}" class="btn btn-outline-dark">
+          <i class="material-icons align-middle" role="presentation">reply</i>
+          <span> {{ post.replys }} </span></a>
+        {% if post.user.id == user.pk %}
+        <a href="" class="btn btn-outline-dark">
+          <i class="material-icons align-middle" role="presentation">delete</i>
+          <span></span></a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% for reply in replies %}
+  {% if reply.parent_id == post.id %}
+
+  <div class="card bg-light ml-5 mr-3">
+    <div class="card-body">
+      <p class="card-text">{{ reply.text }}</p>
+    </div>
+    <div class="card-footer text-muted">
+      <a href="/users/{{ reply.user }}" class="badge badge-dark"> @{{ reply.user }}</a>
+      <a href="{% url 'post_detail' pk=post.pk %}" class="badge">{{ reply.created_at }}</a>
+
+      <div class="btn-group btn-group-sm float-right" role="group" aria-label="Reply Misc">
+        <a href="{% url 'post_like' pk=reply.pk %}" class="btn btn-outline-dark">
+          <i class="material-icons align-middle"
+            role="presentation">favorite_border</i><span>{{ reply.likes }}</span></a>
+
+        <a href="{% url 'post_detail' pk=reply.pk %}" class="btn btn-outline-dark">
+          <i class="material-icons align-middle" role="presentation">reply</i><span>{{ reply.replys }}</span></a>
+      </div>
+    </div>
+  </div>
+
+  {% endif %}
+  {% endfor %}
+  {% endfor %}
+
+</div>
+{% endblock %}

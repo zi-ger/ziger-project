@@ -1,0 +1,7 @@
+*.pyc
+*~
+__pycache__
+migrations
+zvenv
+.DS_Store
+.vscode
