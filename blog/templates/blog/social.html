@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="col-md-8 mx-auto my-3">
+    
+    {% for u in user_list %}
+    <div class="card">
+        <div class="card-body text-center">
+            
+                <img class="rounded-circle mx-auto mt-3" src="{{ u.photo.url }}" alt="{{ u.username }}" height="64" width="64">
+            
+            <h4 class="card-title my-2">{{ u.username }}</h4>
+            {% if u.id != user.id %}
+            <a href="/u/{{ u.username }}" class="btn btn-secondary btn-block my-2">See Profile</a>
+            <form action="/follow_unfollow" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="follow" value="{{ u.id }}">
+
+                {% if u in user.follows.all %}
+                <button type="submit" class="btn btn-sm btn-outline-primary btn-block">Unfollow</button>
+                {% else %}
+                <button type="submit" class="btn btn-sm btn-primary btn-block">Follow</button>
+                {% endif %}
+            </form>
+            {% else %}
+            <a href="/u/{{ u.username }}" class="btn btn-outline-dark btn-block my-2">See Profile</a>
+            <a href="{% url 'edit_profile' %}" class="btn btn-outline-dark btn-block">Edit Profile</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="my-3"></div>
+    {% endfor %}
+
+
+
+</div>
+
+{% endblock %}

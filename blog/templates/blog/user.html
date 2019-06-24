@@ -5,12 +5,24 @@
 
 <div class="col-md-8 mx-auto">
 
-  <div class="card text-center mx-3">
-    <img class="mx-auto mt-3" src="{% static 'images/user.png' %}" alt="Card image" height="128" width="128">
+  <div class="card text-center mx-3 my-3">
+    <img class="rounded-circle mx-auto mt-3" src="{{ puser.photo.url }}" alt="Card image" height="128" width="128">
     <div class="card-body">
-      <h3 class="card-title">{{ puser.username }}'s Profile</h3>
-      <h5 class="card-title"><a href="/users/{{ user.username }}">@{{ puser.username }}</a></h5>
-      <p class="card-text">User bio.</p>
+      <h3 class="card-title"><a href="/u/{{ puser.username }}">@{{ puser.username }}</a></h3>
+      <p class="card-text">
+        <strong>
+          {% if puser.first_name %}
+            {{ puser.first_name}}
+          {% endif %}
+          {% if puser.last_name %}
+            {{ puser.last_name}}
+          {% endif %}
+        </strong>
+      </p>
+      <div class="my-3"></div>
+      {% if puser.bio %}
+      <p class="card-text">{{ puser.bio }}</p>
+      {% endif %}
 
       {% if puser.id != user.id %}
       <form action="/follow_unfollow" method="post">
@@ -18,11 +30,13 @@
         <input type="hidden" name="follow" value="{{ puser.id }}">
 
         {% if follow %}
-        <button type="submit" class="btn btn-primary">Unfollow</button>
+        <button type="submit" class="btn btn-outline-primary">Unfollow</button>
         {% else %}
         <button type="submit" class="btn btn-primary">Follow</button>
         {% endif %}
       </form>
+      {% else %}
+      <a href="{% url 'edit_profile' %}" class="btn btn-outline-dark">Edit Profile</a>
       {% endif %}
 
     </div>
@@ -35,14 +49,24 @@
       <p class="card-text">{{ post.text }}</p>
     </div>
     <div class="card-footer text-muted">
-      <img src="{% static 'images/user.png' %}" width="32" height="32" alt="">
+
+      <img class="rounded-circle" src="{{ post.user.photo.url }}" alt="{{ post.user.username }}" height="32" width="32">
+
       <a href="/users/{{ post.user }}" class="badge badge-dark"> @{{ post.user }}</a>
       <a href="{% url 'post_detail' pk=post.pk %}" class="badge">{{ post.created_at }}</a>
 
       <div class="btn-group btn-group-sm float-right" role="group" aria-label="Post Misc">
-        <a href="{% url 'post_like' pk=post.pk %}" class="btn btn-outline-dark">
-          <i class="material-icons align-middle" role="presentation">favorite_border</i>
-          <span>{{ post.likes }}</span></a>
+          {% if user in post.likes.all %}
+            <button type="button" class="btn btn-outline-dark" href="{% url 'post_like' pk=post.pk %}" id="like{{ post.pk }}" data-id="{{ post.pk }}">
+                <i class="material-icons align-middle" role="presentation" id="icon{{ post.pk }}">favorite</i>
+                <span id="numlikes{{ post.pk }}">{{ post.likes.count }}</span>
+            </button>
+          {% else %}
+            <button type="button" class="btn btn-outline-dark" href="{% url 'post_like' pk=post.pk %}" id="like{{ post.pk }}" data-id="{{ post.pk }}">
+                <i class="material-icons align-middle" role="presentation" id="icon{{ post.pk }}">favorite_border</i>
+                <span id="numlikes{{ post.pk }}">{{ post.likes.count }}</span>
+            </button>
+          {% endif %}
         <a href="{% url 'post_detail' pk=post.pk %}" class="btn btn-outline-dark">
           <i class="material-icons align-middle" role="presentation">reply</i>
           <span> {{ post.replys }} </span></a>
@@ -67,10 +91,17 @@
       <a href="{% url 'post_detail' pk=post.pk %}" class="badge">{{ reply.created_at }}</a>
 
       <div class="btn-group btn-group-sm float-right" role="group" aria-label="Reply Misc">
-        <a href="{% url 'post_like' pk=reply.pk %}" class="btn btn-outline-dark">
-          <i class="material-icons align-middle"
-            role="presentation">favorite_border</i><span>{{ reply.likes }}</span></a>
-
+        {% if user in reply.likes.all %}
+          <button type="button" class="btn btn-outline-dark" href="{% url 'post_like' pk=reply.pk %}" id="like{{ reply.pk }}" data-id="{{ reply.pk }}">
+            <i class="material-icons align-middle" role="presentation" id="icon{{ reply.pk }}">favorite</i>
+            <span id="numlikes{{ reply.pk }}">{{ reply.likes.count }}</span>
+          </button>
+        {% else %}
+          <button type="button" class="btn btn-outline-dark" href="{% url 'post_like' pk=reply.pk %}" id="like{{ reply.pk }}" data-id="{{ reply.pk }}">
+            <i class="material-icons align-middle" role="presentation" id="icon{{ reply.pk }}">favorite_border</i>
+            <span id="numlikes{{ reply.pk }}">{{ reply.likes.count }}</span>
+          </button>
+        {% endif %}
         <a href="{% url 'post_detail' pk=reply.pk %}" class="btn btn-outline-dark">
           <i class="material-icons align-middle" role="presentation">reply</i><span>{{ reply.replys }}</span></a>
       </div>

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block offcontblock %}
+
+<div class="col-md-8 mx-auto">
+  <div class="card my-5">
+    <div class="card-body">
+      <h4 class="card-title text-center my-2">Register to Ziger</h4>
+      <form class="my-4" method="post">
+        {% csrf_token %}
+        {% load crispy_forms_tags %}
+        {{ form|crispy }}
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+        <hr class="my-5">
+        <a href="{% url 'login' %}" class="btn btn-sm btn-outline-secondary btn-block">Already have an account? Login here</a>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,69 +1,54 @@
+from django.http import HttpResponseRedirect, HttpResponse, Http404, JsonResponse
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login, logout
-# from django.contrib.auth.models import User
-from django.conf import settings
-from django.contrib.auth import get_user_model
-
-
-
-from django.http import Http404
-
-from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.utils import timezone
-from django.urls import reverse
-from .forms import UserPostForm, ReplyForm#, UserLoginForm
-from .models import UserPost#, UserProfile
+from django.core.mail import send_mail, BadHeaderError
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404
+from django.utils import timezone
+from django.conf import settings
+from django.urls import reverse
+
+from .forms import UserPostForm, ReplyForm, HelpForm
+from .models import UserPost
 
 import logging
 
-logger = logging.getLogger('django.request')
-
-def index(request):
-    if request.user.is_authenticated:
-
-        # u = UserProfile.objects.get_or_create(user=request.user)
-
-        following_user_ids = []
-        following_user_ids.append(request.user.id)
-
-        for fol in request.user.follows.all():
-            following_user_ids.append(fol.id)
-        
-
-        userposts = UserPost.objects.filter(user__in=following_user_ids)
-
-        # todo refazer consulta para otimizar o banco
-        replies = []
-        for up in userposts:
-            replies += up.replies.all()
-
-        # logger.info(replies)
-
-        if request.method == "POST":
-            pform = UserPostForm(request.POST)
-
-            if pform.is_valid():
-                post = pform.save(commit=False)
-                post.user = request.user
-                post.published_date = timezone.now()
-                post.save()
-
-                return redirect('/')
-        else:
-            pform = UserPostForm()
-        return render(request, 'blog/index.html', {'pform': pform, 'posts': userposts, 'replies': replies, 'user': request.user})
-    else:
-        loginform = UserLoginForm(request.POST)
-        return render(request, 'blog/user_login.html', {'loginform': loginform})
+User = get_user_model()
+# logger = logging.getLogger('django.request')
 
 @login_required
-def users(request, username=''):
+def index(request):
+    following_user_ids = []
+    following_user_ids.append(request.user.id)
+
+    for fol in request.user.follows.all():
+        following_user_ids.append(fol.id)
+
+    userposts = UserPost.objects.filter(user__in=following_user_ids)
+
+    replies = []
+    for up in userposts:
+        replies += up.replies.all()
+
+    if request.method == "POST":
+        pform = UserPostForm(request.POST)
+
+        if pform.is_valid():
+            post = pform.save(commit=False)
+            post.user = request.user
+            post.published_date = timezone.now()
+            post.save()
+
+            return redirect('/')
+    else:
+        pform = UserPostForm()
+    return render(request, 'blog/index.html', {'pform': pform, 'posts': userposts, 'replies': replies, 'user': request.user})
+
+@login_required
+def user(request, username=''):
     try:
-        puser = get_user_model().objects.get(username=username)
-    except get_user_model().DoesNotExist:
+        puser = User.objects.get(username=username)
+    except User.DoesNotExist:
         raise Http404
 
     userposts = UserPost.objects.filter(user=puser.id)
@@ -71,11 +56,11 @@ def users(request, username=''):
     for up in userposts:
         replies += up.replies.all()
 
-    if username == get_user_model().objects.get(id=request.user.id).username:
+    if username == User.objects.get(id=request.user.id).username:
         return render(request, 'blog/user.html', {'puser': puser, 'userposts': userposts, 'replies': replies, })
     else:
         
-        reqU = get_user_model().objects.get(id=request.user.id)
+        reqU = User.objects.get(id=request.user.id)
         following = reqU.follows.all()
 
         if puser in following:
@@ -83,10 +68,9 @@ def users(request, username=''):
         else:
             return render(request, 'blog/user.html', {'puser': puser, 'userposts': userposts, 'replies': replies, 'follow': False, })
 
-# @login_required
+@login_required
 def post_detail(request, pk):
     post = get_object_or_404(UserPost, id=pk)
-
     replies = post.replies.all()
 
     if request.method == "POST":
@@ -103,63 +87,90 @@ def post_detail(request, pk):
         replyForm = ReplyForm()
     return render(request, 'blog/post_detail.html', {'replyform': replyForm, 'post': post, 'replies': replies, 'user': request.user})
 
-# @login_required
+@login_required
 def follow_unfollow(request):
     if request.method == "POST":
         follow_id = request.POST.get('follow', False)
-        user = get_user_model().objects.get(id=follow_id)
+        user = User.objects.get(id=follow_id)
 
-        reqU = get_user_model().objects.get(id=request.user.id)
+        reqU = User.objects.get(id=request.user.id)
         following = reqU.follows.all()
 
         if user in following:
             reqU.follows.remove(user)
-            logger.info('user unfollowed')
         else:
             reqU.follows.add(user)
-            logger.info('user followed')
 
-        return redirect('users/{}'.format(user.username))
+        return redirect('u/{}'.format(user.username))
 
-# @login_required
+@login_required
 def post_delete(request, pk):
     post = get_object_or_404(UserPost, id=pk)
     if post.user.id == request.user.id:
         post.delete()
     return redirect('/')
 
-# @login_required
-def post_like(request, pk):
+@login_required
+def post_like_pl(request, pk):        
     post = get_object_or_404(UserPost, id=pk)
-    post.likes += 1
-    post.save()
+
+    likes = post.likes.all()
+
+    if request.user in likes:
+        post.likes.remove(request.user)
+    else:
+        post.likes.add(request.user)
+
     return redirect('/')
 
-
-# def user_login(request):
-#     if request.method == 'POST':
-#         username = request.POST.get('username')
-#         password = request.POST.get('password')
-#         user = authenticate(username=username, password=password)
-#         if user:
-#             if user.is_active:
-#                 login(request,user)
-#                 return HttpResponseRedirect(reverse('index'))
-#             else:
-#                 return HttpResponse("Your account was inactive.")
-            
-#         else:
-#             print("Someone tried to login and failed.")
-#             print("They used username: {} and password: {}".format(username,password))
-#             return HttpResponse("Invalid login details given")
-#     else:
-#         if request.user.is_authenticated:
-#             return HttpResponseRedirect(reverse('index'))
-        
-#         loginform = UserLoginForm(request.POST)
-#         return render(request, 'blog/user_login.html', {'loginform': loginform})
-
 @login_required
-def user_logout(request):
-    logout(request)
-    return HttpResponseRedirect(reverse('index'))
+def post_like(request, pk):
+    try:
+        post = get_object_or_404(UserPost, id=pk)
+        likes = post.likes.all()
+
+        if request.user in likes:
+            post.likes.remove(request.user)
+            data = {
+                'likesCount': post.likes.count(),
+                'liked': False,
+                'status': 1
+            }
+        else:
+            post.likes.add(request.user)
+            data = {
+                'likesCount': post.likes.count(),
+                'liked': True,
+                'status': 1
+            }
+        
+    except:
+        data = {
+            'status': 0
+        }
+
+    return JsonResponse(data)
+
+def social(request):
+    user_list = User.objects.all()
+    return render(request, 'blog/social.html', {'user_list': user_list})
+
+def help(request):
+	if request.method == 'GET':
+		email_form = HelpForm()
+	else:
+		email_form = HelpForm(request.POST)
+		if email_form.is_valid():
+			subject = email_form.cleaned_data['subject']
+			message = email_form.cleaned_data['message']
+			sender = email_form.cleaned_data['sender']
+
+			try:
+				send_mail(subject, sender+' - '+subject, sender, ['ziger.application@gmail.com'])
+			except BadHeaderError:
+				return HttpResponse("Error.")
+			return redirect('message_sent')
+	return render(request, 'blog/help.html', {'form': email_form})
+
+def message_sent(request):
+	return HttpResponse("<h2>Your message was sent.</h2>")

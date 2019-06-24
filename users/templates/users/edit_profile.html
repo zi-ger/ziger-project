@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="col-md-8 mx-auto">
+  <div class="card my-5">
+    <div class="card-body">
+      <h4 class="card-title text-center my-2">Edit profile</h4>
+      <form class="my-4" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% load crispy_forms_tags %}
+        {{ form.photo|as_crispy_field }}
+        {{ form.email|as_crispy_field }}
+        {{ form.first_name|as_crispy_field }}   
+        {{ form.last_name|as_crispy_field }}
+        {{ form.bio|as_crispy_field }}
+        <a href="{% url 'password_change' %}" class="btn btn-sm btn-outline-secondary btn-block">Change password</a>       
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Save profile</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

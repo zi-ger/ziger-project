@@ -1,24 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block leftcontblock %}
-
-<div class="card bg-light text-center mx-3">
-    <div class="card-header">
-        Featured
-    </div>
-    <div class="card-body">
-        <h5 class="card-title">Announcement Card</h5>
-        <p class="card-text">You're special yo.</p>
-        <a href="#" class="btn btn-primary">That's it</a>
-    </div>
-    <div class="card-footer text-muted">
-        2 days ago
-    </div>
-</div>
-
-{% endblock %}
-
 {% block rightcontblock %}
 
 {# <!-- NEW USER POST --> #}
@@ -50,14 +32,27 @@
         <p class="card-text">{{ post.text }}</p>
     </div>
     <div class="card-footer text-muted">
-        <img src="{% static 'images/user.png' %}" width="32" height="32" alt="">
-        <a href="/users/{{ post.user }}" class="badge badge-dark"> @{{ post.user }}</a>
+
+        <img class="rounded-circle" src="{{ post.user.photo.url }}" alt="{{ post.user.username }}" height="32" width="32">
+
+        <a href="/u/{{ post.user }}" class="badge badge-dark"> @{{ post.user }}</a>
         <a href="{% url 'post_detail' pk=post.pk %}" class="badge">{{ post.created_at }}</a>
 
         <div class="btn-group btn-group-sm float-right" role="group" aria-label="Post Misc">
-            <a href="{% url 'post_like' pk=post.pk %}" class="btn btn-outline-dark">
-                <i class="material-icons align-middle" role="presentation">favorite_border</i>
-                <span>{{ post.likes }}</span></a>
+           
+            {% if user in post.likes.all %}
+                <button type="button" class="btn btn-outline-dark" href="{% url 'post_like' pk=post.pk %}" id="like{{ post.pk }}" data-id="{{ post.pk }}">
+                    <i class="material-icons align-middle" role="presentation" id="icon{{ post.pk }}">favorite</i>
+                    <span id="numlikes{{ post.pk }}">{{ post.likes.count }}</span>
+                </button>
+
+            {% else %}
+                <button type="button" class="btn btn-outline-dark" href="{% url 'post_like' pk=post.pk %}" id="like{{ post.pk }}" data-id="{{ post.pk }}">
+                    <i class="material-icons align-middle" role="presentation" id="icon{{ post.pk }}">favorite_border</i>
+                    <span id="numlikes{{ post.pk }}">{{ post.likes.count }}</span>
+                </button>
+            {% endif %}
+
             <a href="{% url 'post_detail' pk=post.pk %}" class="btn btn-outline-dark">
                 <i class="material-icons align-middle" role="presentation">reply</i>
                 <span> {{ post.replys }} </span></a>
@@ -78,14 +73,26 @@
         <p class="card-text">{{ reply.text }}</p>
     </div>
     <div class="card-footer text-muted">
-        <a href="/users/{{ reply.user }}" class="badge badge-dark"> @{{ reply.user }}</a>
+        <a href="/u/{{ reply.user }}" class="badge badge-dark"> @{{ reply.user }}</a>
         <a href="{% url 'post_detail' pk=post.pk %}" class="badge">{{ reply.created_at }}</a>
 
         <div class="btn-group btn-group-sm float-right" role="group" aria-label="Reply Misc">
-            <a href="{% url 'post_like' pk=reply.pk %}" class="btn btn-outline-dark">
-                <i  class="material-icons align-middle"
-                    role="presentation">favorite_border</i><span>{{ reply.likes }}</span></a>
 
+            {% comment %}
+            {% if user in reply.likes.all %}
+                <button type="button" class="btn btn-outline-dark" href="{% url 'post_like' pk=reply.pk %}" id="like{{ reply.pk }}" data-id="{{ reply.pk }}">
+                    <i class="material-icons align-middle" role="presentation" id="icon{{ reply.pk }}">favorite</i>
+                    <span id="numlikes{{ reply.pk }}">{{ reply.likes.count }}</span>
+                </button>
+
+            {% else %}
+                <button type="button" class="btn btn-outline-dark" href="{% url 'post_like' pk=reply.pk %}" id="like{{ reply.pk }}" data-id="{{ reply.pk }}">
+                    <i class="material-icons align-middle" role="presentation" id="icon{{ reply.pk }}">favorite_border</i>
+                    <span id="numlikes{{ reply.pk }}">{{ reply.likes.count }}</span>
+                </button>
+            {% endif %}
+            {% endcomment %}
+            
             <a href="{% url 'post_detail' pk=reply.pk %}" class="btn btn-outline-dark">
                 <i  class="material-icons align-middle" 
                     role="presentation">reply</i><span>{{ reply.replys }}</span></a>

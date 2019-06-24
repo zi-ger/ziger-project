@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block offcontblock %}
+
+<div class="col-md-8 mx-auto">
+  <div class="card my-5">
+    <div class="card-body">
+      <h4 class="card-title text-center my-2">Log in to Ziger</h4>
+      <form class="my-4" method="post">
+        {% csrf_token %}
+        {% load widget_tweaks %}
+        <div class="form-group">{% render_field form.username class+="form-control" placeholder+="Username" %}</div>
+        <div class="form-group">{% render_field form.password class+="form-control" placeholder+="Password" %}</div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <a href="{% url 'password_reset' %}" class="btn btn-sm btn-outline-secondary btn-block">Forgot my password</a>
+        <hr class="my-5">
+        <a href="{% url 'signup' %}" class="btn btn-md btn-outline-primary btn-block">Do not have an account? Register here</a>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
