@@ -88,6 +88,7 @@
       <p class="card-text">{{ reply.text }}</p>
     </div>
     <div class="card-footer text-muted">
+      <img class="rounded-circle" src="{{ reply.user.photo.url }}" alt="{{ reply.user.username }}" height="32" width="32">
       <a href="{% url 'user' username=reply.user.username %}" class="badge badge-dark"> @{{ reply.user }}</a>
       <a href="{% url 'post_detail' pk=post.pk %}" class="badge">{{ reply.created_at }}</a>
 

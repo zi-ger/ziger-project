@@ -41,14 +41,18 @@
             </div>
         </div>
         <div class="card-footer">
-            <form method="POST" class="form-inline float-right">
+            <form method="POST">
                 {% csrf_token %}
                 {% load widget_tweaks %}
-                <div class="form-group">
-                    {% render_field replyform.text class+="form-control" placeholder+="Reply" %}
-                </div>
                 <input type="hidden" id="id_parent" name="parent" value="{{ post.id }}">
-                <button type="submit" class="btn btn-primary btn-inline">Post</button>
+                <div class="form-row">
+                    <div class="col-8">
+                        {% render_field replyform.text class+="form-control" placeholder+="Reply" %}
+                    </div>
+                    <div class="col-4">
+                        <button type="submit" class="btn btn-primary btn-block">Post reply</button>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
@@ -60,6 +64,7 @@
                 <p class="card-text">{{ reply.text }}</p>
             </div>
             <div class="card-footer text-muted">
+                <img class="rounded-circle" src="{{ reply.user.photo.url }}" alt="{{ reply.user.username }}" height="32" width="32">
                 <a href="{% url 'user' username=reply.user.username %}" class="badge badge-dark"> @{{ reply.user }}</a>
                 <a href="{% url 'post_detail' pk=post.pk %}" class="badge">{{ reply.created_at }}</a>
                 
