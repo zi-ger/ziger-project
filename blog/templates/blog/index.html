@@ -35,7 +35,7 @@
 
         <img class="rounded-circle" src="{{ post.user.photo.url }}" alt="{{ post.user.username }}" height="32" width="32">
 
-        <a href="/u/{{ post.user }}" class="badge badge-dark"> @{{ post.user }}</a>
+        <a href="/u/{{ post.user.username }}" class="badge badge-dark"> @{{ post.user.username }}</a>
         <a href="{% url 'post_detail' pk=post.pk %}" class="badge">{{ post.created_at }}</a>
 
         <div class="btn-group btn-group-sm float-right" role="group" aria-label="Post Misc">

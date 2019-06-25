@@ -12,6 +12,7 @@
                 <img class="rounded-circle mx-auto mt-3" src="{{ u.photo.url }}" alt="{{ u.username }}" height="64" width="64">
             
             <h4 class="card-title my-2">{{ u.username }}</h4>
+            <hr class="my-2">
             {% if u.id != user.id %}
             <a href="/u/{{ u.username }}" class="btn btn-secondary btn-block my-2">See Profile</a>
             <form action="/follow_unfollow" method="post">

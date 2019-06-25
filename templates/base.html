@@ -30,10 +30,10 @@
           <a class="nav-link " href="/"><i class="material-icons align-top" role="presentation">home</i>  Home </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#"><i class="material-icons align-top" role="presentation">inbox</i> Inbox </a>
+          <a class="nav-link" href="#"><i class="material-icons align-top" role="presentation">chat</i> Chat </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'social' %}"><i class="material-icons align-top" role="presentation">people</i> Social </a>
+          <a class="nav-link" href="{% url 'people' %}"><i class="material-icons align-top" role="presentation">people</i> People </a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{% url 'help' %}"><i class="material-icons align-top" role="presentation">help_outline</i> Help </a>
@@ -49,7 +49,6 @@
       </form>
     </div>
   </nav>
-
 
   {% else %}
   {# <!-- IF NOT AUTHENTICATED --> #}
@@ -67,7 +66,7 @@
               class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#"><i class="material-icons align-top" role="presentation">help_outline</i> Help</a>
+          <a class="nav-link" href="{% url 'help' %}"><i class="material-icons align-top" role="presentation">help_outline</i> Help</a>
         </li>
 
       </ul>
@@ -82,6 +81,10 @@
 
       <div class="row">
 
+        <div class="col-12 order-first">
+            {% include 'messages.html' %}
+        </div>
+
         {% block content %}
 
         {# <!-- LEFT --> #}
@@ -93,12 +96,19 @@
             <img class="rounded-circle mx-auto mt-3" src="{{ user.photo.url }}" alt="{{ user.username }}" height="128" width="128">
 
             <div class="card-body">
-              <h3 class="card-title">{{ user.username }}</h3>
+              <h3 class="card-title">
+                {% if user.first_name %}
+                  {{ user.first_name}}
+                {% endif %}
+                {% if user.last_name %}
+                  {{ user.last_name}}
+                {% endif %}
+              </h3>
               <h5 class="card-title"><a href="/u/{{ user.username }}">@{{ user.username }}</a></h5>
               {% if user.bio %}
               <p class="card-text">{{ user.bio }}</p>
               {% endif %}
-              <div class="ny-3"></div>
+              <hr class="my-3">
               <a href="/u/{{ user.username }}" class="btn btn-primary">See Profile</a>
             </div>
           </div>
@@ -116,7 +126,6 @@
             {% endblock %}
             
           </div>
-
 
         </div>
 
@@ -139,6 +148,11 @@
 
     {# <!-- IF NOT AUTHENTICATED --> #}
     <div class="row">
+
+      <div class="col-12 order-first">
+          {% include 'messages.html' %}
+      </div>
+
       {% block offcontblock %}
       {% endblock %}
     </div>

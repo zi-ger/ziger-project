@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail, BadHeaderError
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib import messages
 from django.utils import timezone
 from django.conf import settings
 from django.urls import reverse
@@ -151,9 +152,9 @@ def post_like(request, pk):
 
     return JsonResponse(data)
 
-def social(request):
+def people(request):
     user_list = User.objects.all()
-    return render(request, 'blog/social.html', {'user_list': user_list})
+    return render(request, 'blog/people.html', {'user_list': user_list})
 
 def help(request):
 	if request.method == 'GET':
@@ -166,11 +167,12 @@ def help(request):
 			sender = email_form.cleaned_data['sender']
 
 			try:
-				send_mail(subject, sender+' - '+subject, sender, ['ziger.application@gmail.com'])
+				send_mail(sender+' - '+subject, message, from_email=sender, recipient_list=['ziger.application@gmail.com'])
 			except BadHeaderError:
 				return HttpResponse("Error.")
 			return redirect('message_sent')
 	return render(request, 'blog/help.html', {'form': email_form})
 
 def message_sent(request):
-	return HttpResponse("<h2>Your message was sent.</h2>")
+      messages.success(request, 'Message sent.')
+      return redirect('index')

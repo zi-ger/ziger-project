@@ -8,22 +8,23 @@
   <div class="card text-center mx-3 my-3">
     <img class="rounded-circle mx-auto mt-3" src="{{ puser.photo.url }}" alt="Card image" height="128" width="128">
     <div class="card-body">
-      <h3 class="card-title"><a href="/u/{{ puser.username }}">@{{ puser.username }}</a></h3>
-      <p class="card-text">
-        <strong>
-          {% if puser.first_name %}
-            {{ puser.first_name}}
-          {% endif %}
-          {% if puser.last_name %}
-            {{ puser.last_name}}
-          {% endif %}
-        </strong>
-      </p>
-      <div class="my-3"></div>
+      <h3 class="card-title">
+        {% if puser.first_name %}
+          {{ puser.first_name}}
+        {% endif %}
+        {% if puser.last_name %}
+          {{ puser.last_name}}
+        {% endif %}
+      </h3>
+      <h5 class="card-title">
+        <a href="/u/{{ puser.username }}">
+          @{{ puser.username }}
+        </a>
+      </h5>
       {% if puser.bio %}
       <p class="card-text">{{ puser.bio }}</p>
       {% endif %}
-
+      <hr class="my-3">
       {% if puser.id != user.id %}
       <form action="/follow_unfollow" method="post">
         {% csrf_token %}

@@ -1,20 +1,36 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block content %}
-
-<div class="col-md-8 mx-auto">
-  <div class="card my-5">
-    <div class="card-body">
-      <h4 class="card-title text-center my-2">Need help? Send us an email</h4>
-      <form class="my-4" method="post">
-        {% csrf_token %}
-        {% load crispy_forms_tags %}
-        {{ form|crispy }}
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Send email</button>
-      </form>
+{% if user.is_authenticated %}
+  {% block content %}
+  <div class="col-md-8 mx-auto">
+    <div class="card my-5">
+      <div class="card-body">
+        <h4 class="card-title text-center my-2">Need help? Send us an email</h4>
+        <form class="my-4" method="post">
+          {% csrf_token %}
+          {% load crispy_forms_tags %}
+          {{ form|crispy }}
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Send email</button>
+        </form>
+      </div>
     </div>
   </div>
-</div>
-
-{% endblock %}
+  {% endblock %}
+{% else %}
+  {% block offcontblock %}
+  <div class="col-md-8 mx-auto">
+    <div class="card my-5">
+      <div class="card-body">
+        <h4 class="card-title text-center my-2">Need help? Send us an email</h4>
+        <form class="my-4" method="post">
+          {% csrf_token %}
+          {% load crispy_forms_tags %}
+          {{ form|crispy }}
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Send email</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endblock %}
+{% endif %}
