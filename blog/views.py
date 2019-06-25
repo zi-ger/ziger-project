@@ -15,7 +15,6 @@ from .models import UserPost
 import logging
 
 User = get_user_model()
-# logger = logging.getLogger('django.request')
 
 @login_required
 def index(request):
@@ -144,7 +143,6 @@ def post_like(request, pk):
                 'liked': True,
                 'status': 1
             }
-        
     except:
         data = {
             'status': 0
@@ -152,6 +150,7 @@ def post_like(request, pk):
 
     return JsonResponse(data)
 
+@login_required
 def people(request):
     user_list = User.objects.all()
     return render(request, 'blog/people.html', {'user_list': user_list})
@@ -170,8 +169,10 @@ def help(request):
 				send_mail(sender+' - '+subject, message, from_email=sender, recipient_list=['ziger.application@gmail.com'])
 			except BadHeaderError:
 				return HttpResponse("Error.")
+
 			return redirect('message_sent')
 	return render(request, 'blog/help.html', {'form': email_form})
+
 
 def message_sent(request):
       messages.success(request, 'Message sent.')

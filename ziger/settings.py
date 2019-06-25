@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'widget_tweaks',
     'crispy_forms',
+    'channels',
+    'chat',
     'blog',
 ]
 
@@ -62,7 +64,7 @@ LOGOUT_REDIRECT_URL = '/'
 
 EMAIL_HOST = ''
 EMAIL_HOST_USER = '' 
-EMAIL_HOST_PASSWORD = 'yylhlhsypfbgtcfi'
+EMAIL_HOST_PASSWORD = ''
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
@@ -86,6 +88,15 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'ziger.wsgi.application'
+ASGI_APPLICATION = 'ziger.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
@@ -100,7 +111,6 @@ DATABASES = {
         'PORT': '',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators

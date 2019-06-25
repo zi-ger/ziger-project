@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% if user.is_authenticated %}
+  {% block content %}
+  <div class="col-md-8 mx-auto">
+    <div class="card my-5">
+      <div class="card-body">
+        <h2 class="card-title text-center">Hmm...</h2>
+        <h4 class="card-title text-center">It seems like you're lost.</h4>
+        <hr class="my-3">
+        <a href="/" class="btn btn-dark btn-block">Back to home</a>
+      </div>
+    </div>
+  </div>
+  {% endblock %}
+{% else %}
+  {% block offcontblock %}
+  <div class="col-md-8 mx-auto">
+    <div class="card my-5">
+      <div class="card-body">
+        <h2 class="card-title">Hmm...</h2>
+        <h4 class="card-title text-center">It seems like you're lost.</h4>
+        <hr class="my-3">
+        <a href="/" class="btn btn-dark btn-block">Back to home</a>  
+    </div>
+    </div>
+  </div>
+  {% endblock %}
+{% endif %}

@@ -1,5 +1,4 @@
 from django.urls import path
-from django.conf.urls import url
 from . import views
 
 urlpatterns = [
@@ -10,7 +9,7 @@ urlpatterns = [
     path('people/', views.people, name='people'),
     path('help/', views.help, name='help'),
     path('help/message_sent', views.message_sent, name='message_sent'),
-    url(r'^follow_unfollow$', views.follow_unfollow, name='follow_unfollow'),
-    url(r'^u/(?P<username>\w{0,50})/$', views.user, name='user'),
+    path('follow_unfollow', views.follow_unfollow, name='follow_unfollow'),
+    path('u/<slug:username>/', views.user, name='user'),
 
 ]

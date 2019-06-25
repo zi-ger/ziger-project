@@ -2,42 +2,42 @@
 {% load static %}
 
 {% block content %}
-<div class="col-lg-8 mx-auto order-first">
+<div class="col-lg-8 mx-auto my-5 order-first">
     {# <!-- POSTS --> #}
-    </br>
 
     <div class="card bg-light">
         <div class="card-body">
             <p class="card-text">{{ post.text }}</p>
         </div>
         <div class="card-footer text-muted">
-            
             <img class="rounded-circle" src="{{ post.user.photo.url }}" alt="{{ post.user.username }}" height="32" width="32">
-            
             <a href="/u/{{ post.user }}" class="badge badge-dark"> @{{ post.user }}</a>
             <a href="{% url 'post_detail' pk=post.pk %}" class="badge">{{ post.created_at }}</a>
-
             <div class="btn-group btn-group-sm float-right" role="group" aria-label="Post Misc">
+                
                 {% if user in post.likes.all %}
                     <button type="button" class="btn btn-outline-dark" href="{% url 'post_like' pk=post.pk %}" id="like{{ post.pk }}" data-id="{{ post.pk }}">
                         <i class="material-icons align-middle" role="presentation" id="icon{{ post.pk }}">favorite</i>
                         <span id="numlikes{{ post.pk }}">{{ post.likes.count }}</span>
                     </button>
-    
                 {% else %}
                     <button type="button" class="btn btn-outline-dark" href="{% url 'post_like' pk=post.pk %}" id="like{{ post.pk }}" data-id="{{ post.pk }}">
                         <i class="material-icons align-middle" role="presentation" id="icon{{ post.pk }}">favorite_border</i>
                         <span id="numlikes{{ post.pk }}">{{ post.likes.count }}</span>
                     </button>
                 {% endif %}
+
                 <a href="{% url 'post_detail' pk=post.pk %}" class="btn btn-outline-dark">
                     <i class="material-icons align-middle" role="presentation">reply</i>
-                    <span> {{ post.replys }} </span></a>
+                    <span> {{ post.replys }} </span>
+                </a>
+
                 {% if post.user.id == user.pk %}
-                <a href="" class="btn btn-outline-dark">
+                <a href="{% url 'post_delete' pk=post.pk %}" class="btn btn-outline-dark">
                     <i class="material-icons align-middle" role="presentation">delete</i>
-                    <span></span></a>
+                </a>
                 {% endif %}
+
             </div>
         </div>
         <div class="card-footer">
@@ -60,10 +60,11 @@
                 <p class="card-text">{{ reply.text }}</p>
             </div>
             <div class="card-footer text-muted">
-                <a href="/u/{{ reply.user }}" class="badge badge-dark"> @{{ reply.user }}</a>
+                <a href="{% url 'user' username=reply.user.username %}" class="badge badge-dark"> @{{ reply.user }}</a>
                 <a href="{% url 'post_detail' pk=post.pk %}" class="badge">{{ reply.created_at }}</a>
                 
                 <div class="btn-group btn-group-sm float-right" role="group" aria-label="Post Misc">
+                
                 {% if user in reply.likes.all %}
                     <button type="button" class="btn btn-outline-dark" href="{% url 'post_like' pk=reply.pk %}" id="like{{ reply.pk }}" data-id="{{ reply.pk }}">
                         <i class="material-icons align-middle" role="presentation" id="icon{{ reply.pk }}">favorite</i>
@@ -87,4 +88,8 @@
     {% endfor %}
     </br>
 </div>
+{% endblock %}
+
+{% block js %}     
+<script src="{% static 'js/blog.js' %}"></script>
 {% endblock %}

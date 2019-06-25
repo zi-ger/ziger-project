@@ -53,7 +53,7 @@
 
       <img class="rounded-circle" src="{{ post.user.photo.url }}" alt="{{ post.user.username }}" height="32" width="32">
 
-      <a href="/users/{{ post.user }}" class="badge badge-dark"> @{{ post.user }}</a>
+      <a href="{% url 'user' username=post.user.username %}" class="badge badge-dark"> @{{ post.user }}</a>
       <a href="{% url 'post_detail' pk=post.pk %}" class="badge">{{ post.created_at }}</a>
 
       <div class="btn-group btn-group-sm float-right" role="group" aria-label="Post Misc">
@@ -88,7 +88,7 @@
       <p class="card-text">{{ reply.text }}</p>
     </div>
     <div class="card-footer text-muted">
-      <a href="/users/{{ reply.user }}" class="badge badge-dark"> @{{ reply.user }}</a>
+      <a href="{% url 'user' username=reply.user.username %}" class="badge badge-dark"> @{{ reply.user }}</a>
       <a href="{% url 'post_detail' pk=post.pk %}" class="badge">{{ reply.created_at }}</a>
 
       <div class="btn-group btn-group-sm float-right" role="group" aria-label="Reply Misc">
@@ -114,4 +114,8 @@
   {% endfor %}
 
 </div>
+{% endblock %}
+
+{% block js %}     
+<script src="{% static 'js/blog.js' %}"></script>
 {% endblock %}
